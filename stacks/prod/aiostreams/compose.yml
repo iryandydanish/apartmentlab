@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    env_file:
+      - /apartmentlab/gitops/env/prod/postgres-aiostreams.env
+    volumes:
+      - /apartmentlab/data/prod/postgresql:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  aiostreams:
+    image: ${AIOSTREAMS_IMAGE}
+    networks:
+      - edge
+    restart: unless-stopped
+    env_file:
+      - /apartmentlab/gitops/env/prod/aiostreams.env
+      - /apartmentlab/gitops/env/prod/postgres-aiostreams.env
+    volumes:
+      - /apartmentlab/data/prod/aiostreams/data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/v1/status >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+networks:
+  edge:
+    external: true

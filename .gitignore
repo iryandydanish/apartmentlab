@@ -1,0 +1,17 @@
+#################
+# Env to ignore #
+#################
+
+## PROD ##
+/apartmentlab/gitops/env/prod/aiostreams.env
+/apartmentlab/gitops/env/prod/cloudflared.env
+/apartmentlab/gitops/env/prod/postgres-aiostreams.env
+
+## PREPROD ##
+/apartmentlab/gitops/env/preprod/aiostreams.env
+/apartmentlab/gitops/env/preprod/postgres-aiostreams.env
+
+########################
+# Local Data & Volumne #
+########################
+/apartmentlab/data/
