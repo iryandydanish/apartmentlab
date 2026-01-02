@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-BASE_DIR="/apartmentlab/repos/apartmentlab"
+PROJECT_NAME="apartmentlab-prod"
+BASE_DIR="/apartmentlab/prod-repo/apartmentlab"
+
 cd "$BASE_DIR"
 
+# Cloudflared & Portainer
 docker compose \
-  -p apartmentlab-infra\
-  --env-file stacks/prod/versions.env \
-  -f stacks/prod/cloudflared/compose.yml \
-  -f stacks/prod/portainer/compose.yml \
+  -p $PROJECT_NAME \
+  --env-file versions.env \
+  -f application/cloudflared/compose.yml \
+  -f application/portainer/compose.yml \
   down --remove-orphans
-
