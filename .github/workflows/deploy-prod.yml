@@ -4,6 +4,10 @@ on:
   push:
     branches: ["main"]
 
+permissions:
+  id-token: write
+  contents: read
+
 concurrency:
   group: prod-deploy
   cancel-in-progress: false
@@ -18,7 +22,6 @@ jobs:
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          audience: api.tailscale.com
           tags: tag:ci
           ping: ${{ secrets.PROD_IP }}
 
@@ -57,13 +60,3 @@ jobs:
           set -euo pipefail
           ssh prod 'cd /apartmentlab/prod-repo/apartmentlab && git switch main && git pull && ./apps-up.sh'
           echo "Deployed successfully."
-
-
-      # BK
-      # - name: Connect to Tailscale
-      #   uses: tailscale/github-action@v4
-      #   with:
-      #     authkey: ${{ secrets.TS_AUTHKEY }}
-      #     tags: tag:ci
-      #     # Wait until the runner can actually reach prod (prevents "stuck" races)
-      #     ping: ${{ secrets.PROD_IP }}
