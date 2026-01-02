@@ -24,6 +24,7 @@ elif [ "$BASE_DIR" == "/apartmentlab/preprod-repo/apartmentlab" ]; then
   cd "$BASE_DIR"
   docker compose \
     -p "$PROJECT_NAME" \
+    --profile preprod \
     --env-file versions.env \
     -f application/aiostreams/compose.yml \
     -f application/bentopdf/compose.yml \
