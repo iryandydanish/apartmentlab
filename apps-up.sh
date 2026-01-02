@@ -15,7 +15,7 @@ if [ "$BASE_DIR" == "/apartmentlab/prod-repo/apartmentlab" ]; then
     -f application/bentopdf/compose.yml \
     up -d
 
-  echo "Applications started in production environment."
+  echo "Applications started in prod environment."
 
 elif [ "$BASE_DIR" == "/apartmentlab/preprod-repo/apartmentlab" ]; then
 
@@ -29,11 +29,11 @@ elif [ "$BASE_DIR" == "/apartmentlab/preprod-repo/apartmentlab" ]; then
     -f application/bentopdf/compose.yml \
     up -d
 
-  echo "Applications started in production environment."
+  echo "Applications started in preprod environment."
 
 else
 
   echo "Error: Unknown BASE_DIR. Please check the configuration."
   exit 1
-  
+
 fi
