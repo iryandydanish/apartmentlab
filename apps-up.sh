@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-BASE_DIR="$pwd"
+BASE_DIR="$(pwd)"
 
 if [ "$BASE_DIR" == "/apartmentlab/prod-repo/apartmentlab" ]; then
 
@@ -34,5 +34,6 @@ elif [ "$BASE_DIR" == "/apartmentlab/preprod-repo/apartmentlab" ]; then
 else
 
   echo "Error: Unknown BASE_DIR. Please check the configuration."
-
+  exit 1
+  
 fi
