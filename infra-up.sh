@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-BASE_DIR="/apartmentlab/repos/apartmentlab"
+PROJECT_NAME="apartmentlab-prod-infra"
+BASE_DIR="/apartmentlab/prod-repo/apartmentlab"
+
 cd "$BASE_DIR"
 
 # Shared network (idempotent)
 docker network inspect edge >/dev/null 2>&1 || docker network create edge
 
-# Cloudflared & Cloudflared (Always On)
+# Cloudflared & Portainer
 docker compose \
-  -p apartmentlab-infra \
-  --env-file stacks/prod/versions.env \
-  -f stacks/prod/cloudflared/compose.yml \
-  -f stacks/prod/portainer/compose.yml \
+  -p $PROJECT_NAME \
+  --env-file versions.env \
+  -f infrastructure/cloudflared/compose.yml \
+  -f infrastructure/portainer/compose.yml \
   up -d

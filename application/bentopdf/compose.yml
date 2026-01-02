@@ -1,0 +1,24 @@
+services:
+  bentopdf:
+    image: bentopdf/bentopdf:${BENTOPDF_TAG}
+    restart: unless-stopped
+    networks:
+      - edge
+    expose:
+      - "8080"
+
+  bentopdf_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "3001:8080"
+    command: tcp-listen:8080,fork,reuseaddr tcp-connect:bentopdf:8080
+    depends_on:
+      - bentopdf
+
+networks:
+  edge:
+    external: true

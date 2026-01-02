@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    networks:
+      - edge
+    env_file:
+      - /apartmentlab/gitops/env/${ENV}/postgres-aiostreams.env
+    volumes:
+      - /apartmentlab/data/${ENV}/postgresql:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  aiostreams:
+    image: ${AIOSTREAMS_IMAGE}
+    restart: unless-stopped
+    expose:
+      - "3000"
+    networks:
+      - edge
+    env_file:
+      - /apartmentlab/gitops/env/${ENV}/aiostreams.env
+      - /apartmentlab/gitops/env/${ENV}/postgres-aiostreams.env
+    volumes:
+      - /apartmentlab/data/${ENV}/aiostreams/data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/v1/status >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  aiostreams_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "3000:3000"
+    command: tcp-listen:3000,fork,reuseaddr tcp-connect:aiostreams:3000
+    depends_on:
+      - aiostreams
+
+networks:
+  edge:
+    external: true
