@@ -13,6 +13,6 @@ docker network inspect edge >/dev/null 2>&1 || docker network create edge
 docker compose \
   -p $PROJECT_NAME \
   --env-file versions.env \
-  -f application/cloudflared/compose.yml \
-  -f application/portainer/compose.yml \
+  -f infrastructure/cloudflared/compose.yml \
+  -f infrastructure/portainer/compose.yml \
   up -d
