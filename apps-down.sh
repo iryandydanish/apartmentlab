@@ -2,12 +2,13 @@
 set -e
 
 PROJECT_NAME="apartmentlab-prod"
-BASE_DIR="/apartmentlab/repos/apartmentlab"
+BASE_DIR="/apartmentlab/prod-repo/apartmentlab"
 
 cd "$BASE_DIR"
 
 docker compose \
   -p "$PROJECT_NAME" \
-  --env-file stacks/prod/versions.env \
-  -f stacks/prod/aiostreams/compose.yml \
+  --env-file versions.env \
+  -f application/aiostreams/compose.yml \
+  -f application/bentopdf/compose.yml \
   down --remove-orphans
