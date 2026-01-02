@@ -48,6 +48,7 @@ jobs:
           echo "Resolving ${PROD_HOST}..."
           getent hosts "${PROD_HOST}"
 
-          echo "SSH test..."
-          tailscale ssh deploy@${PROD_IP} 'cd /apartmentlab/prod-repo/apartmentlab && ./apps-up.sh'
+          echo "SSH test (Tailscale SSH)..."
+          tailscale ssh "deploy@${PROD_HOST}" -- 'cd /apartmentlab/prod-repo/apartmentlab && ./apps-up.sh'
+
           echo "Deployed successfully."
