@@ -56,5 +56,14 @@ jobs:
       - name: Deploy (prod)
         run: |
           set -euo pipefail
-          ssh prod 'cd /apartmentlab/prod-repo/apartmentlab && git switch main && git pull && ./apps-up.sh'
+          ssh prod '
+            set -e
+            cd /apartmentlab/prod-repo/apartmentlab
+
+            git fetch origin
+            git checkout main
+            git reset --hard origin/main
+
+            ./apps-up.sh
+          '
           echo "Deployed successfully."
