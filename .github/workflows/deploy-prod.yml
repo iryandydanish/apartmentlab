@@ -43,4 +43,9 @@ jobs:
         run: |
           set -euo pipefail
           tailscale status
-          ssh deploy@${PROD_HOST} 'cd /apartmentlab/prod-repo/apartmentlab && DRY_RUN=1 ./apps-up.sh'
+
+          echo "Resolving ${PROD_HOST}..."
+          getent hosts "${PROD_HOST}"
+
+          echo "SSH test..."
+          ssh deploy@${PROD_HOST} 'cd /apartmentlab/prod-repo/apartmentlab && ./apps-up.sh'
