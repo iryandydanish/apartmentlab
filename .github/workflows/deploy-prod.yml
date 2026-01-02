@@ -18,6 +18,7 @@ jobs:
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          audience: api.tailscale.com
           tags: tag:ci
           ping: ${{ secrets.PROD_IP }}
 
@@ -27,7 +28,6 @@ jobs:
           PROD_IP: ${{ secrets.PROD_IP }}
         run: |
           set -euo pipefail
-
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
