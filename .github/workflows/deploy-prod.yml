@@ -28,6 +28,7 @@ jobs:
         with:
           authkey: ${{ secrets.TS_AUTHKEY }}
           tags: tag:ci
+          args: --accept-dns=true
 
       - name: Force hostname resolution (CI)
         env:
