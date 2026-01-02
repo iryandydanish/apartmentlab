@@ -3,7 +3,7 @@ set -e
 
 BASE_DIR="$pwd"
 
-if ["$BASE_DIR" == "/apartmentlab/prod-repo/apartmentlab"]; then
+if [ "$BASE_DIR" == "/apartmentlab/prod-repo/apartmentlab" ]; then
 
   PROJECT_NAME="apartmentlab-prod"
 
@@ -17,7 +17,7 @@ if ["$BASE_DIR" == "/apartmentlab/prod-repo/apartmentlab"]; then
 
   echo "Applications started in production environment."
 
-elif ["$BASE_DIR" == "/apartmentlab/preprod-repo/apartmentlab"]; then
+elif [ "$BASE_DIR" == "/apartmentlab/preprod-repo/apartmentlab" ]; then
 
   PROJECT_NAME="apartmentlab-preprod"
 
