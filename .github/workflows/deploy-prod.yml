@@ -4,10 +4,6 @@ on:
   push:
     branches: ["main"]
 
-permissions:
-  id-token: write
-  contents: read
-
 concurrency:
   group: prod-deploy
   cancel-in-progress: false
@@ -20,9 +16,9 @@ jobs:
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          authkey: ${{ secrets.TS_AUTHKEY }}
           tags: tag:ci
+          # Wait until the runner can actually reach prod (prevents "stuck" races)
           ping: ${{ secrets.PROD_IP }}
 
       - name: Setup SSH key (CI)
@@ -31,12 +27,14 @@ jobs:
           PROD_IP: ${{ secrets.PROD_IP }}
         run: |
           set -euo pipefail
+
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
+          # Non-interactive SSH config (no prompts)
           cat > ~/.ssh/config <<EOF
           Host prod
             HostName ${PROD_IP}
