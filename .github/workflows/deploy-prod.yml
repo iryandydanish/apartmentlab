@@ -17,7 +17,7 @@ jobs:
         uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-client-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
           ping: ${{ secrets.PROD_IP }}
 
@@ -34,7 +34,6 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-          # Non-interactive SSH config (no prompts)
           cat > ~/.ssh/config <<EOF
           Host prod
             HostName ${PROD_IP}
@@ -56,7 +55,7 @@ jobs:
       - name: Deploy (prod)
         run: |
           set -euo pipefail
-          ssh prod 'cd /apartmentlab/prod-repo/apartmentlab && ./apps-up.sh'
+          ssh prod 'cd /apartmentlab/prod-repo/apartmentlab && git switch main && git pull && ./apps-up.sh'
           echo "Deployed successfully."
 
 
