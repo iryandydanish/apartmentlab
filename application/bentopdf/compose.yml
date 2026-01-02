@@ -2,5 +2,11 @@ services:
   bentopdf:
     image: bentopdf/bentopdf:${BENTOPDF_TAG}
     restart: unless-stopped
+    networks:
+      - edge
     ports:
       - '3001:8080'
+
+networks:
+  edge:
+    external: true
