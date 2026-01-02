@@ -29,6 +29,14 @@ jobs:
           authkey: ${{ secrets.TS_AUTHKEY }}
           tags: tag:ci
 
+      - name: Force hostname resolution (CI)
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_IP: ${{ secrets.PROD_IP }}
+        run: |
+          echo "${PROD_IP} ${PROD_HOST}" | sudo tee -a /etc/hosts
+          getent hosts "${PROD_HOST}"
+
       - name: Deploy (dry-run)
         env:
           PROD_HOST: ${{ secrets.PROD_HOST }}
