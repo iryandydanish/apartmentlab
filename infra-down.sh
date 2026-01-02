@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-PROJECT_NAME="apartmentlab-prod"
+PROJECT_NAME="apartmentlab-prod-infra"
 BASE_DIR="/apartmentlab/prod-repo/apartmentlab"
 
 cd "$BASE_DIR"
