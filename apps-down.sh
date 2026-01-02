@@ -10,4 +10,4 @@ docker compose \
   -p "$PROJECT_NAME" \
   --env-file stacks/prod/versions.env \
   -f stacks/prod/aiostreams/compose.yml \
-  up -d
+  down --remove-orphans

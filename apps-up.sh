@@ -11,5 +11,6 @@ docker compose \
   --env-file versions.env \
   -f application/aiostreams/compose.yml \
   -f application/bentopdf/compose.yml \
-  down --remove-orphans
+  up -d
+
 
