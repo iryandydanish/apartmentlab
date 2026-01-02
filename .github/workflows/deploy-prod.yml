@@ -49,5 +49,5 @@ jobs:
             git fetch origin
             git checkout main
             git reset --hard origin/main
-            ./apps-up.sh
+            ./apps-restart.sh
           '
