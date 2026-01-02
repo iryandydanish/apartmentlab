@@ -1,7 +1,7 @@
 name: Deploy prod-repo for ApartmentLab
 
 on:
-  pull_request:
+  push:
     branches: ["main"]
 
 concurrency:
@@ -10,11 +10,19 @@ concurrency:
 
 jobs:
   deploy:
-    # This only run when PR is merged (not just closed)
-    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
+      - name: Configure SSH (non-interactive)
+        run: |
+          mkdir -p ~/.ssh
+          cat >> ~/.ssh/config <<'EOF'
+          Host apartmentlab *.ts.net
+            StrictHostKeyChecking accept-new
+            UserKnownHostsFile ~/.ssh/known_hosts
+          EOF
+          chmod 600 ~/.ssh/config
+
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
