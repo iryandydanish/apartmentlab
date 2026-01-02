@@ -16,9 +16,9 @@ jobs:
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
-          authkey: ${{ secrets.TS_AUTHKEY }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-client-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-          # Wait until the runner can actually reach prod (prevents "stuck" races)
           ping: ${{ secrets.PROD_IP }}
 
       - name: Setup SSH key (CI)
@@ -58,3 +58,13 @@ jobs:
           set -euo pipefail
           ssh prod 'cd /apartmentlab/prod-repo/apartmentlab && ./apps-up.sh'
           echo "Deployed successfully."
+
+
+      # BK
+      # - name: Connect to Tailscale
+      #   uses: tailscale/github-action@v4
+      #   with:
+      #     authkey: ${{ secrets.TS_AUTHKEY }}
+      #     tags: tag:ci
+      #     # Wait until the runner can actually reach prod (prevents "stuck" races)
+      #     ping: ${{ secrets.PROD_IP }}
