@@ -2,6 +2,8 @@ services:
   postgres:
     image: postgres:18
     restart: unless-stopped
+    networks:
+      - edge
     env_file:
       - /apartmentlab/gitops/env/prod/postgres-aiostreams.env
     volumes:
@@ -14,9 +16,9 @@ services:
 
   aiostreams:
     image: ${AIOSTREAMS_IMAGE}
+    restart: unless-stopped
     networks:
       - edge
-    restart: unless-stopped
     env_file:
       - /apartmentlab/gitops/env/prod/aiostreams.env
       - /apartmentlab/gitops/env/prod/postgres-aiostreams.env
