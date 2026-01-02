@@ -40,6 +40,7 @@ jobs:
       - name: Deploy (dry-run)
         env:
           PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_IP: ${{ secrets.PROD_IP }}
         run: |
           set -euo pipefail
           tailscale status
