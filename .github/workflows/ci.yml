@@ -1,17 +1,12 @@
-name: Deploy to Prod for ApartmentLab
+name: CI Check for ApartmentLab
 
 on:
-  push:
+  pull_request:
     branches: ["main"]
 
-concurrency:
-  group: prod-deploy
-  cancel-in-progress: false
-
 jobs:
-  deploy:
+  ci:
     runs-on: ubuntu-latest
-
     steps:
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
@@ -41,13 +36,5 @@ jobs:
             ConnectTimeout 10
           EOF
 
-      - name: Deploy
-        run: |
-          ssh prod '
-            set -e
-            cd /apartmentlab/prod-repo/apartmentlab
-            git fetch origin
-            git checkout main
-            git reset --hard origin/main
-            ./apps-up.sh
-          '
+      - name: SSH smoke test
+        run: ssh prod 'whoami && hostname'
