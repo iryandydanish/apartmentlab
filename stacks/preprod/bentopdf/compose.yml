@@ -1,0 +1,6 @@
+services:
+  bentopdf:
+    image: bentopdf/bentopdf:${BENTOPDF_TAG}
+    restart: unless-stopped
+    ports:
+      - '3000:8080'
