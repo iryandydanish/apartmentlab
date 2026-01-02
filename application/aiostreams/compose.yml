@@ -17,6 +17,8 @@ services:
   aiostreams:
     image: ${AIOSTREAMS_IMAGE}
     restart: unless-stopped
+    expose:
+      - "3000"
     networks:
       - edge
     env_file:
