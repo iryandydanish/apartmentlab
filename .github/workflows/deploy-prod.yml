@@ -18,6 +18,8 @@ jobs:
         with:
           authkey: ${{ secrets.TS_AUTHKEY }}
           tags: tag:ci
+          # Wait until the runner can actually reach prod (prevents "stuck" races)
+          ping: ${{ secrets.PROD_IP }}
 
       - name: Setup SSH key (CI)
         env:
@@ -25,13 +27,14 @@ jobs:
           PROD_IP: ${{ secrets.PROD_IP }}
         run: |
           set -euo pipefail
+
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-          # Non-interactive SSH: never prompt, just fail if key/host is wrong
+          # Non-interactive SSH config (no prompts)
           cat > ~/.ssh/config <<EOF
           Host prod
             HostName ${PROD_IP}
@@ -40,12 +43,18 @@ jobs:
             IdentitiesOnly yes
             StrictHostKeyChecking accept-new
             UserKnownHostsFile ~/.ssh/known_hosts
+            BatchMode yes
+            ConnectTimeout 10
           EOF
           chmod 600 ~/.ssh/config
+
+      - name: SSH test (prod)
+        run: |
+          set -euo pipefail
+          ssh prod 'whoami && hostname && echo ok'
 
       - name: Deploy (prod)
         run: |
           set -euo pipefail
-          echo "SSH test..."
-          ssh -o BatchMode=yes prod 'cd /apartmentlab/prod-repo/apartmentlab && ./apps-up.sh'
+          ssh prod 'cd /apartmentlab/prod-repo/apartmentlab && ./apps-up.sh'
           echo "Deployed successfully."
