@@ -17,14 +17,14 @@ jobs:
     steps:
       - name: Approve PR
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
           GH_REPO: ${{ github.repository }}
         run: |
           gh pr review ${{ github.event.issue.number }} --approve || true
 
       - name: Enable auto-merge
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
           GH_REPO: ${{ github.repository }}
         run: |
           gh pr merge ${{ github.event.issue.number }} --auto --merge
