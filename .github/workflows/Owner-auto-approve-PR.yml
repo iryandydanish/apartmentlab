@@ -6,24 +6,30 @@ on:
 
 jobs:
   approve_automerge:
-    runs-on: ubuntu-latest
     if: >
       github.event.issue.pull_request &&
       github.event.comment.body == 'Approved' &&
       github.event.comment.user.login == github.repository_owner
-    permissions:
-      pull-requests: write
-      contents: read
-    steps:
-      - name: Approve PR (no git needed)
-        run: |
-          gh pr review "${{ github.event.issue.number }}" --approve --repo "${{ github.repository }}"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Enable auto-merge (merge commit)
-        run: |
-          gh pr merge "${{ github.event.issue.number }}" --auto --merge --repo "${{ github.repository }}"
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - name: Approve PR
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-#dry-run test
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh pr review ${{ github.event.issue.number }} --approve || true
+
+      - name: Debug gh auth (who am I?)
+        run: |
+          gh auth status
+          gh api user -q .login
+
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh pr merge ${{ github.event.issue.number }} --auto --merge
