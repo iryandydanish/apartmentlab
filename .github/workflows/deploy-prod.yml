@@ -46,9 +46,8 @@ jobs:
           ssh prod '
             set -e
             cd /apartmentlab/prod-repo/apartmentlab
-            sudo git fetch origin
-            $SUDO_PASSWORD
-            sudo git checkout main
-            sudo git reset --hard origin/main
+            git fetch origin
+            git checkout main
+            git reset --hard origin/main
             ./apps-restart.sh
           '
