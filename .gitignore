@@ -3,13 +3,10 @@
 #################
 
 ## PROD ##
-/apartmentlab/gitops/env/prod/aiostreams.env
-/apartmentlab/gitops/env/prod/cloudflared.env
-/apartmentlab/gitops/env/prod/postgres-aiostreams.env
+/gitops/env/prod/*
 
 ## PREPROD ##
-/apartmentlab/gitops/env/preprod/aiostreams.env
-/apartmentlab/gitops/env/preprod/postgres-aiostreams.env
+/apartmentlab/gitops/env/preprod/*
 
 ########################
 # Local Data & Volumne #
