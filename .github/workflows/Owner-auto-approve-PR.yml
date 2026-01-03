@@ -39,3 +39,5 @@ jobs:
       - name: Enable auto-merge (merge commit)
         run: |
           gh pr merge ${{ github.event.issue.number }} --auto --merge
+
+#test -deploy
