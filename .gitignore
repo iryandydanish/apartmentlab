@@ -4,6 +4,7 @@
 
 ## PROD ##
 /gitops/env/prod/*
+/apartmentlab/gitops/env/prod/*
 
 ## PREPROD ##
 /apartmentlab/gitops/env/preprod/*
