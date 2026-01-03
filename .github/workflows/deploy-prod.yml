@@ -57,10 +57,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           GH_REPO: ${{ github.repository }}
         run: |
-          set -euo pipefail
-          PR_NUMBER="$(gh pr list --state merged --search "${{ github.sha }}" --json number -q '.[0].number' || true)"
-          if [ -n "${PR_NUMBER:-}" ]; then
-            gh pr comment "$PR_NUMBER" --body "✅ Deployed to prod for commit `${{ github.sha }}`"
+          set +e
+
+          SHA="${{ github.sha }}"
+          echo "SHA=$SHA"
+
+          PR_NUMBER="$(gh pr list --state merged --search "$SHA" --json number -q '.[0].number' 2>/dev/null)"
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr comment "$PR_NUMBER" --body "✅ Deployed to prod for commit \`$SHA\`" || true
+            echo "Commented on PR #$PR_NUMBER"
           else
-            echo "No merged PR found for this commit (maybe direct push)."
+            echo "No merged PR found for SHA=$SHA (maybe direct push)."
           fi
+
+          exit 0
+
