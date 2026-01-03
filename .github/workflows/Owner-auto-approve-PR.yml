@@ -1,11 +1,11 @@
-name: Approve + Auto-merge on Approved comment
+name: Enable Auto-merge on Approved comment
 
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  approve_automerge:
+  automerge:
     if: >
       github.event.issue.pull_request &&
       github.event.comment.body == 'Approved' &&
@@ -13,29 +13,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # IMPORTANT: gh reads GH_TOKEN for authentication
     env:
       GH_TOKEN: ${{ secrets.GH_PAT }}
       GH_REPO: ${{ github.repository }}
 
     steps:
-      - name: Debug token present
-        run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "GH_TOKEN is EMPTY"
-            exit 1
-          fi
-          echo "GH_TOKEN is set (length: ${#GH_TOKEN})"
-
-      - name: Debug identity (non-fatal)
-        continue-on-error: true
-        run: |
-          gh api user -q .login || true
-
-      - name: Approve PR
-        run: |
-          gh pr review ${{ github.event.issue.number }} --approve || true
-
       - name: Enable auto-merge (merge commit)
         run: |
           gh pr merge ${{ github.event.issue.number }} --auto --merge
