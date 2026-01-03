@@ -15,16 +15,12 @@ services:
       retries: 10
 
   aiostreams:
-    image: ghcr.io/viren070/aiostreams:${AIOSTREAMS_TAG}
+    image: ${AIOSTREAMS_IMAGE}
     restart: unless-stopped
-    networks:
-      - edge
     expose:
       - "3000"
-    ports:
-      - "3000:3000"
-    profiles:
-      - preprod
+    networks:
+      - edge
     env_file:
       - /apartmentlab/gitops/env/${ENV}/aiostreams.env
       - /apartmentlab/gitops/env/${ENV}/postgres-aiostreams.env
@@ -39,6 +35,18 @@ services:
       timeout: 10s
       retries: 10
       start_period: 10s
+
+  aiostreams_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "3000:3000"
+    command: tcp-listen:3000,fork,reuseaddr tcp-connect:aiostreams:3000
+    depends_on:
+      - aiostreams
 
 networks:
   edge:
