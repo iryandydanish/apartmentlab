@@ -5,7 +5,6 @@ on:
     types: [created]
   workflow_dispatch:
 
-
 jobs:
   approve_automerge:
     runs-on: ubuntu-latest
@@ -17,12 +16,17 @@ jobs:
       pull-requests: write
       contents: read
     steps:
+      - name: Checkout (needed for gh)
+        uses: actions/checkout@v4
+
       - name: Approve PR
         run: gh pr review ${{ github.event.issue.number }} --approve
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
 
       - name: Enable auto-merge (merge commit)
         run: gh pr merge ${{ github.event.issue.number }} --auto --merge
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
