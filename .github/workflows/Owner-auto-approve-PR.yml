@@ -1,12 +1,11 @@
-name: Auto-approve owner PRs
+name: Auto-approve -> merge owner PRs
 
 on:
   issue_comment:
     types: [created]
-  workflow_dispatch:
 
 jobs:
-  auto-approve:
+  approve_automerge:
     runs-on: ubuntu-latest
     if: >
       github.event.issue.pull_request &&
@@ -14,8 +13,16 @@ jobs:
       github.event.comment.user.login == github.repository_owner
     permissions:
       pull-requests: write
+      contents: read
     steps:
-      - name: Auto-approve PR
-        run: gh pr review ${{ github.event.issue.number }} --approve
+      - name: Approve PR (no git needed)
+        run: |
+          gh pr review "${{ github.event.issue.number }}" --approve --repo "${{ github.repository }}"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Enable auto-merge (merge commit)
+        run: |
+          gh pr merge "${{ github.event.issue.number }}" --auto --merge --repo "${{ github.repository }}"
         env:
           GITHUB_TOKEN: ${{ github.token }}
