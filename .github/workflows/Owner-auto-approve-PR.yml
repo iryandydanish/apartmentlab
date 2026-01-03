@@ -22,6 +22,11 @@ jobs:
         run: |
           gh pr review ${{ github.event.issue.number }} --approve || true
 
+      - name: Debug gh auth (who am I?)
+        run: |
+          gh auth status
+          gh api user -q .login
+
       - name: Enable auto-merge
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
