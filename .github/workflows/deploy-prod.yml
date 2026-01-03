@@ -13,6 +13,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Comment deploy started on PR
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set +e
+
+          SHA="${{ github.sha }}"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          PR_NUMBER="$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/commits/$SHA/pulls \
+            -q '.[0].number' 2>/dev/null)"
+
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr comment "$PR_NUMBER" --body $'⌛ Started deployment to prod for commit `'"$SHA"$'`\nSee log here: [Actions run]('"$RUN_URL"$')' || true
+            echo "Commented on PR #$PR_NUMBER"
+          else
+            echo "No PR found for SHA=$SHA (maybe direct push)."
+          fi
+
+          exit 0
+
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
@@ -52,7 +76,8 @@ jobs:
             ./apps-restart.sh
           '
 
-      - name: Comment deploy success on PR (if any)
+      - name: Comment deploy success on PR
+        if: success()
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           GH_REPO: ${{ github.repository }}
@@ -60,15 +85,43 @@ jobs:
           set +e
 
           SHA="${{ github.sha }}"
-          echo "SHA=$SHA"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          PR_NUMBER="$(gh pr list --state merged --search "$SHA" --json number -q '.[0].number' 2>/dev/null)"
+          PR_NUMBER="$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/commits/$SHA/pulls \
+            -q '.[0].number' 2>/dev/null)"
+
           if [ -n "$PR_NUMBER" ]; then
-            gh pr comment "$PR_NUMBER" --body "✅ Deployed to prod for commit \`$SHA\`" || true
+            gh pr comment "$PR_NUMBER" --body $'✅ Deployed to prod for commit `'"$SHA"$'`\nSee log here: [Actions run]('"$RUN_URL"$')' || true
             echo "Commented on PR #$PR_NUMBER"
           else
-            echo "No merged PR found for SHA=$SHA (maybe direct push)."
+            echo "No PR found for SHA=$SHA (maybe direct push)."
           fi
 
           exit 0
 
+      - name: Comment deploy failure on PR
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set +e
+
+          SHA="${{ github.sha }}"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          PR_NUMBER="$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/commits/$SHA/pulls \
+            -q '.[0].number' 2>/dev/null)"
+
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr comment "$PR_NUMBER" --body $'❌ Deployment FAILED for commit `'"$SHA"$'`\nSee log here: [Actions run]('"$RUN_URL"$')' || true
+            echo "Commented on PR #$PR_NUMBER"
+          else
+            echo "No PR found for SHA=$SHA (maybe direct push)."
+          fi
+
+          exit 0
