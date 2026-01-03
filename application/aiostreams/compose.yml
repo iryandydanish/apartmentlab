@@ -15,7 +15,7 @@ services:
       retries: 10
 
   aiostreams:
-    image: ${AIOSTREAMS_IMAGE}
+    image: ghcr.io/viren070/aiostreams:${AIOSTREAMS_TAG}
     restart: unless-stopped
     expose:
       - "3000"
