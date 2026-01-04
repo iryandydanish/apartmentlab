@@ -4,7 +4,7 @@
 
 ## PROD ##
 /gitops/env/prod/*
-/apartmentlab/gitops/env/prod/*
+/apartmentlab/gitops/env/
 
 ## PREPROD ##
 /apartmentlab/gitops/env/preprod/*
@@ -13,3 +13,8 @@
 # Local Data & Volumne #
 ########################
 /apartmentlab/data/
+
+########################
+# Python Developing #
+########################
+/python-scripts/
