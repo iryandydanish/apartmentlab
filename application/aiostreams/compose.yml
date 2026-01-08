@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:18
+    image: postgres:${POSTGRES_TAG}
     restart: unless-stopped
     networks:
       - edge
@@ -10,7 +10,7 @@ services:
       - /apartmentlab/data/${ENV}/postgresql:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 10s
+      interval: 1s
       timeout: 5s
       retries: 10
 

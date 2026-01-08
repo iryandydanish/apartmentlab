@@ -1,0 +1,38 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:${PROWLERR_TAG}
+    restart: unless-stopped
+    expose:
+      - "9696"
+    networks:
+      - edge
+    environment:
+      - PUID=${PID}
+      - PGID=${PID}
+      - TZ=${TIMEZONE}
+    env_file:
+      - /apartmentlab/gitops/env/${ENV}/prowlarr.env
+    volumes:
+      - /apartmentlab/data/${ENV}/prowlarr/config:/config
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9696/api/v1/status >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  prowlarr_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "9697:9696"
+    command: tcp-listen:9696,fork,reuseaddr tcp-connect:prowlarr:9696
+    depends_on:
+      - prowlarr
+
+networks:
+  edge:
+    external: true
