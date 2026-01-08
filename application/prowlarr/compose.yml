@@ -6,10 +6,6 @@ services:
       - "9696"
     networks:
       - edge
-    environment:
-      - PUID=${PID}
-      - PGID=${PID}
-      - TZ=${TIMEZONE}
     env_file:
       - /apartmentlab/gitops/env/${ENV}/prowlarr.env
     volumes:
