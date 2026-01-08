@@ -20,7 +20,7 @@ services:
     networks:
       - edge
     ports:
-      - "3002:8080"
+      - "3001:8080"
     command: tcp-listen:8080,fork,reuseaddr tcp-connect:bentopdf:8080
     depends_on:
       - bentopdf
