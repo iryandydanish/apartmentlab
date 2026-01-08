@@ -1,6 +1,6 @@
 services:
   bentopdf:
-    image: ghcr.io/alam00000/bentopdf:${BENTOPDF_TAG}
+    image: bentopdf/bentopdf:${BENTOPDF_TAG}
     restart: unless-stopped
     networks:
       - edge
