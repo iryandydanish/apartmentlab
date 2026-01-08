@@ -43,7 +43,7 @@ services:
     networks:
       - edge
     ports:
-      - "3002:3000"
+      - "3001:3000"
     command: tcp-listen:3000,fork,reuseaddr tcp-connect:aiostreams:3000
     depends_on:
       - aiostreams
