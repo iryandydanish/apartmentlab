@@ -1,17 +1,22 @@
 services:
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:${PROWLERR_TAG}
+  rdtclient:
+    image: rogerfar/rdtclient
     restart: unless-stopped
-    expose:
-      - "9696"
-    networks:
-      - edge
-    env_file:
-      - /apartmentlab/gitops/env/${ENV}/prowlarr.env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
     volumes:
-      - /apartmentlab/data/${ENV}/prowlarr/config:/config
+      - <path to data>:/data/db
+      - <path to downloads>:/data/downloads
+    logging:
+       driver: json-file
+       options:
+          max-size: 10m
+    ports:
+      - 6500:6500
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9696 || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9696/api/v1/status || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
