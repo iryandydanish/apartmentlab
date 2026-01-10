@@ -2,15 +2,15 @@ services:
   rdtclient:
     image: rogerfar/rdtclient:${RDTCLIENT_TAG}
     restart: unless-stopped
+    expose:
+      - "6500"
+    networks:
+      - edge
     env_file:
       - /apartmentlab/gitops/env/${ENV}/rdtclient.env
     volumes:
       - /apartmentlab/data/${ENV}/rdtclient/data:/data/db
       - /apartmentlab/data/${ENV}/rdtclient/data:/data/downloads
-    expose:
-      - "6500"
-    networks:
-      - edge
     logging:
        driver: json-file
        options:
@@ -32,7 +32,7 @@ services:
       - "6501:6500"
     command: tcp-listen:6500,fork,reuseaddr tcp-connect:prowlarr:6500
     depends_on:
-      - prowlarr
+      - rdtclient
 
 networks:
   edge:
