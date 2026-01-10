@@ -32,7 +32,7 @@ services:
       - edge
     ports:
       - "5174:5173"
-    command: tcp-listen:5173,fork,reuseaddr tcp-connect:aiostreams:5173
+    command: tcp-listen:5173,fork,reuseaddr tcp-connect:cinesync:5173
     depends_on:
       - cinesync
 
