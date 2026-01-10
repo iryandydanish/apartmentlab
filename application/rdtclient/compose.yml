@@ -9,8 +9,8 @@ services:
     env_file:
       - /apartmentlab/gitops/env/${ENV}/rdtclient.env
     volumes:
-      - /apartmentlab/data/${ENV}/rdtclient/data:/data/db
-      - /apartmentlab/data/${ENV}/rdtclient/data:/data/downloads
+      - /apartmentlab/data/${ENV}/rdtclient/db:/data/db
+      - /apartmentlab/data/${ENV}/rdtclient/downloads:/storage/symlinks/downloads
     logging:
        driver: json-file
        options:
