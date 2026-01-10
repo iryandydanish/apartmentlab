@@ -35,8 +35,8 @@ services:
       - "8083:8082"
       - "5174:5173"
     command: >
-      sh -c 'socat -d -d TCP-LISTEN:8083,fork,reuseaddr TCP:cinesync:8083 &
-            socat -d -d TCP-LISTEN:5174,fork,reuseaddr TCP:cinesync:5173'
+      sh -c 'socat -d -d TCP-LISTEN:8082,fork,reuseaddr TCP:cinesync:8082 &
+            socat -d -d TCP-LISTEN:5173,fork,reuseaddr TCP:cinesync:5173'
     depends_on:
       - cinesync
 
