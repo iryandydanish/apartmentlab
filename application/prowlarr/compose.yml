@@ -1,6 +1,6 @@
 services:
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:${PROWLERR_TAG}
+    image: lscr.io/linuxserver/prowlarr:${PROWLARR_TAG}
     restart: unless-stopped
     expose:
       - "9696"

@@ -1,22 +1,22 @@
 services:
   rdtclient:
-    image: rogerfar/rdtclient
+    image: rogerfar/rdtclient:${RDTCLIENT_TAG}
     restart: unless-stopped
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
+    env_file:
+      - /apartmentlab/gitops/env/${ENV}/rdtClient.env
     volumes:
-      - <path to data>:/data/db
-      - <path to downloads>:/data/downloads
+      - /apartmentlab/data/${ENV}/rdtclient/data:/data/db
+      - /apartmentlab/data/${ENV}/rdtclient/data:/data/downloads
+    expose:
+      - "6500"
+    networks:
+      - edge
     logging:
        driver: json-file
        options:
           max-size: 10m
-    ports:
-      - 6500:6500
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9696/api/v1/status || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:6500 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -29,8 +29,8 @@ services:
     networks:
       - edge
     ports:
-      - "9697:9696"
-    command: tcp-listen:9696,fork,reuseaddr tcp-connect:prowlarr:9696
+      - "6501:6500"
+    command: tcp-listen:6500,fork,reuseaddr tcp-connect:prowlarr:6500
     depends_on:
       - prowlarr
 
