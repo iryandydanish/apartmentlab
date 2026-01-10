@@ -17,6 +17,7 @@ if [ "$BASE_DIR" = "/apartmentlab/prod-repo/apartmentlab" ]; then
     -f application/aiostreams/compose.yml \
     -f application/bentopdf/compose.yml \
     -f application/prowlarr/compose.yml \
+    -f application/dumb/compose.yml \
     up -d
 
   echo "Applications started in $ENV environment."
@@ -36,6 +37,7 @@ elif [ "$BASE_DIR" = "/apartmentlab/preprod-repo/apartmentlab" ]; then
     -f application/aiostreams/compose.yml \
     -f application/bentopdf/compose.yml \
     -f application/prowlarr/compose.yml \
+    -f application/dumb/compose.yml \
     up -d
 
   echo "Applications started in $ENV environment."
