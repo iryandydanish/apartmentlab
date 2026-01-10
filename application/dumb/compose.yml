@@ -1,0 +1,47 @@
+services:
+  DUMB:
+    image: iampuid0/dumb:{DUMP_TAG}
+    stop_grace_period: 30s
+    shm_size: 128mb
+    stdin_open: true
+    tty: true
+    volumes:
+      - /apartmentlab/data/${ENV}/DUMB/config:/config
+      - /apartmentlab/data/${ENV}/DUMB/log:/log
+      - /apartmentlab/data/${ENV}/DUMB/data:/data
+      - /apartmentlab/data/${ENV}/DUMB/mnt/debrid:/mnt/debrid
+    expose:
+      - "3005"
+    networks:
+      - edge
+    env_file:
+      - /apartmentlab/gitops/env/${ENV}/dumb.env
+    devices:
+      - /dev/fuse:/dev/fuse:rwm
+      - /dev/dri:/dev/dri
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3005 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  DUMB_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "3006:3005"
+    command: tcp-listen:3005,fork,reuseaddr tcp-connect:DUMB:3005
+    depends_on:
+      - DUMB
+
+networks:
+  edge:
+    external: true
