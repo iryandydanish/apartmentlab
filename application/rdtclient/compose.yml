@@ -3,7 +3,7 @@ services:
     image: rogerfar/rdtclient:${RDTCLIENT_TAG}
     restart: unless-stopped
     env_file:
-      - /apartmentlab/gitops/env/${ENV}/rdtClient.env
+      - /apartmentlab/gitops/env/${ENV}/rdtclient.env
     volumes:
       - /apartmentlab/data/${ENV}/rdtclient/data:/data/db
       - /apartmentlab/data/${ENV}/rdtclient/data:/data/downloads
