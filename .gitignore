@@ -15,6 +15,6 @@
 /apartmentlab/data/
 
 ########################
-# Python Developing #
+# Developing Compose files #
 ########################
-/python-scripts/
+application/rdtclient/**
