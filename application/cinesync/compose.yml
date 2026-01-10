@@ -1,0 +1,41 @@
+services:
+  cinesync:
+    image: sureshfizzy/cinesync:${CINESYNC_TAG}
+    restart: unless-stopped
+    networks:
+      - edge
+    expose:
+      - "8082"
+    .env_file:
+      - /apartmentlab/gitops/env/${ENV}/cinesync.env
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    devices:
+      - /dev/fuse:/dev/fuse:rwm
+    volumes:
+      - /apartmentlab/data/${ENV}/cinesync/mnt:/mnt:rshared
+      - /apartmentlab/data/${ENV}/cinesync/db:/app/db
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8082 >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  cinesync_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "8083:8082"
+    command: tcp-listen:8082,fork,reuseaddr tcp-connect:cinesync:8082
+    depends_on:
+      - cinesync
+
+networks:
+  edge:
+    external: true
