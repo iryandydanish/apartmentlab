@@ -19,8 +19,7 @@ services:
       - /apartmentlab/data/${ENV}/cinesync/mnt:/mnt:rshared
       - /apartmentlab/data/${ENV}/cinesync/db:/app/db
     healthcheck:
-healthcheck:
-  test: ["CMD-SHELL", "wget -qO- http://localhost:5173/health >/dev/null && wget -qO- http://localhost:8082/health >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5173/health >/dev/null && wget -qO- http://localhost:8082/health >/dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
