@@ -6,6 +6,7 @@ services:
       - edge
     expose:
       - "8082"
+      - "5173"
     env_file:
       - /apartmentlab/gitops/env/${ENV}/cinesync.env
     cap_add:
@@ -18,7 +19,7 @@ services:
       - /apartmentlab/data/${ENV}/cinesync/mnt:/mnt:rshared
       - /apartmentlab/data/${ENV}/cinesync/db:/app/db
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8082 >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5173 >/dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -32,7 +33,8 @@ services:
       - edge
     ports:
       - "8083:8082"
-    command: tcp-listen:8082,fork,reuseaddr tcp-connect:cinesync:8082
+      - "5174:5173"
+    command: tcp-listen:5173,fork,reuseaddr tcp-connect:cinesync:5173
     depends_on:
       - cinesync
 
