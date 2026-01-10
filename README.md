@@ -1,4 +1,4 @@
-# ApartmentLab
+# ApartmentLab [WIP]
 This is my passion project, ApartmentLab. Repo is public for future employers to see my capabilities
 
 The purpose of this project is to selfhost various services like below:
