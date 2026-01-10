@@ -10,12 +10,12 @@ services:
       - /apartmentlab/gitops/env/${ENV}/prowlarr.env
     volumes:
       - /apartmentlab/data/${ENV}/prowlarr/config:/config
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9696/api/v1/status || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 10s
+    # healthcheck:
+    #   test: ["CMD-SHELL", "wget -q --spider http://localhost:9696/api/v1/status || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 10
+    #   start_period: 10s
 
   prowlarr_pub:
     image: alpine/socat
