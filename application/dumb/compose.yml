@@ -10,10 +10,8 @@ services:
       - /apartmentlab/data/${ENV}/DUMB/log:/log
       - /apartmentlab/data/${ENV}/DUMB/data:/data
       - /apartmentlab/data/${ENV}/DUMB/mnt/debrid:/mnt/debrid
-    expose:
-      - "3005"
-    networks:
-      - edge
+    ports:
+      - "3005:3005"
     env_file:
       - /apartmentlab/gitops/env/${ENV}/dumb.env
     devices:
@@ -29,19 +27,3 @@ services:
       timeout: 10s
       retries: 10
       start_period: 10s
-
-  DUMB_pub:
-    image: alpine/socat
-    restart: unless-stopped
-    profiles: ["preprod"]
-    networks:
-      - edge
-    ports:
-      - "3006:3005"
-    command: tcp-listen:3005,fork,reuseaddr tcp-connect:DUMB:3005
-    depends_on:
-      - DUMB
-
-networks:
-  edge:
-    external: true
