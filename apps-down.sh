@@ -9,13 +9,13 @@ if [ "$BASE_DIR" = "/apartmentlab/prod-repo/apartmentlab" ]; then
   PROJECT_NAME="apartmentlab-prod"
 
   cd "$BASE_DIR"
-  ENV="$ENV" docker compose \
+  ENV="$ENV" docker compose down \
     -p "$PROJECT_NAME" \
     --env-file versions.env \
     -f application/aiostreams/compose.yml \
     -f application/bentopdf/compose.yml \
     -f application/prowlarr/compose.yml \
-    down --remove-orphans
+    --remove-orphans
 
   echo "Applications stopped in prod environment."
 
@@ -25,14 +25,14 @@ elif [ "$BASE_DIR" = "/apartmentlab/preprod-repo/apartmentlab" ]; then
   PROJECT_NAME="apartmentlab-preprod"
 
   cd "$BASE_DIR"
-  ENV="$ENV" docker compose \
+  ENV="$ENV" docker compose down \
     -p "$PROJECT_NAME" \
     --profile preprod \
     --env-file versions.env \
     -f application/aiostreams/compose.yml \
     -f application/bentopdf/compose.yml \
     -f application/prowlarr/compose.yml \
-    down --remove-orphans
+    --remove-orphans
 
   echo "Applications stopped in preprod environment."
 
