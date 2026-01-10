@@ -30,7 +30,7 @@ services:
       - edge
     ports:
       - "6501:6500"
-    command: tcp-listen:6500,fork,reuseaddr tcp-connect:prowlarr:6500
+    command: tcp-listen:6500,fork,reuseaddr tcp-connect:rdtclient:6500
     depends_on:
       - rdtclient
 
