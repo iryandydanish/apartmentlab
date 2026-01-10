@@ -16,7 +16,7 @@ services:
     devices:
       - /dev/fuse:/dev/fuse:rwm
     volumes:
-      - /apartmentlab/data/rclone/torbox:/mnt/source:rshared
+      - /apartmentlab/data/rclone/torbox:/mnt/source
       - /apartmentlab/data/${ENV}/cinesync/library:/mnt/destination/library
       - /apartmentlab/data/${ENV}/cinesync/db:/app/db
     healthcheck:
