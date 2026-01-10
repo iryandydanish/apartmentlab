@@ -17,6 +17,7 @@ services:
       - /dev/fuse:/dev/fuse:rwm
     volumes:
       - /apartmentlab/data/rclone/torbox:/mnt:ro,rshared
+      - /apartmentlab/data/${ENV}/cinesync/library:/mnt/destination/library
       - /apartmentlab/data/${ENV}/cinesync/db:/app/db
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:5173/health >/dev/null && wget -qO- http://localhost:8082/health >/dev/null || exit 1"]
