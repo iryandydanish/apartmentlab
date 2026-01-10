@@ -5,7 +5,6 @@ services:
     networks:
       - edge
     expose:
-      - "8082"
       - "5173"
     env_file:
       - /apartmentlab/gitops/env/${ENV}/cinesync.env
@@ -32,11 +31,8 @@ services:
     networks:
       - edge
     ports:
-      - "8083:8082"
       - "5174:5173"
-    command: >
-      sh -c 'socat -d -d TCP-LISTEN:8082,fork,reuseaddr TCP:cinesync:8082 &
-            socat -d -d TCP-LISTEN:5173,fork,reuseaddr TCP:cinesync:5173'
+    command: tcp-listen:5173,fork,reuseaddr tcp-connect:aiostreams:5173
     depends_on:
       - cinesync
 
