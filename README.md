@@ -31,3 +31,10 @@ apartmentlab \
         ├── portainer \
         │   └── compose.yml \
         └── versions.env \
+
+Example preprod -> prod deployment
+- https://github.com/iryandydanish/apartmentlab/pull/57
+
+Example preprod -> prod failed deployment -> revert branch -> deploy rollback (CI/CD)
+- https://github.com/iryandydanish/apartmentlab/pull/55
+- https://github.com/iryandydanish/apartmentlab/pull/56
