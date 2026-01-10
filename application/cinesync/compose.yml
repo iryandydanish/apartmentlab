@@ -34,10 +34,10 @@ services:
     ports:
       - "5174:5173"
       - "8083:8082"
-    command: >
-      sh -c 'socat -d -d TCP-LISTEN:5173,fork,reuseaddr TCP:cinesync:5173 &
-            socat -d -d TCP-LISTEN:8082,fork,reuseaddr TCP:cinesync:8082 &
-            wait'
+    command: |
+      socat -d -d TCP-LISTEN:5173,fork,reuseaddr TCP:cinesync:5173 &
+      socat -d -d TCP-LISTEN:8082,fork,reuseaddr TCP:cinesync:8082 &
+      wait
     depends_on:
       - cinesync
 
