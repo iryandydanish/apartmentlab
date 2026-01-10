@@ -34,7 +34,11 @@ services:
     ports:
       - "8083:8082"
       - "5174:5173"
-    command: tcp-listen:5173,fork,reuseaddr tcp-connect:cinesync:5173
+    command:  >
+      sh -c "
+        socat tcp-listen:8082,fork,reuseaddr tcp-connect:cinesync:8082 &
+        socat tcp-listen:5173,fork,reuseaddr tcp-connect:cinesync:5173
+      "
     depends_on:
       - cinesync
 
