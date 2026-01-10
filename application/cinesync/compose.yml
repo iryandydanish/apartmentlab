@@ -2,8 +2,6 @@ services:
   cinesync:
     image: sureshfizzy/cinesync:${CINESYNC_TAG}
     restart: unless-stopped
-    networks:
-      - edge
     ports:
       - "5173:5173"  # Web Interface
       - "8082:8082"  # API & WebDAV
@@ -37,6 +35,6 @@ services:
   #   depends_on:
   #     - cinesync
 
-networks:
-  edge:
-    external: true
+# networks:
+#   edge:
+#     external: true
