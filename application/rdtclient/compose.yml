@@ -22,7 +22,7 @@ services:
       retries: 10
       start_period: 10s
 
-  prowlarr_pub:
+  rdtclient_pub:
     image: alpine/socat
     restart: unless-stopped
     profiles: ["preprod"]
