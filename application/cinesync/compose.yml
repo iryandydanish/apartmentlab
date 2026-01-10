@@ -6,7 +6,7 @@ services:
       - edge
     expose:
       - "8082"
-    .env_file:
+    env_file:
       - /apartmentlab/gitops/env/${ENV}/cinesync.env
     cap_add:
       - SYS_ADMIN
