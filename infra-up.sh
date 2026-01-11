@@ -9,10 +9,11 @@ cd "$BASE_DIR"
 # Shared network (idempotent)
 docker network inspect edge >/dev/null 2>&1 || docker network create edge
 
-# Cloudflared & Portainer
+# Cloudflared, Portainer & cinesync
 docker compose \
   -p $PROJECT_NAME \
   --env-file versions.env \
   -f infrastructure/cloudflared/compose.yml \
   -f infrastructure/portainer/compose.yml \
+  -f infrastructure/cinesync/compose.yml \
   up -d
