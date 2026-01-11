@@ -14,7 +14,7 @@ services:
     devices:
       - /dev/fuse:/dev/fuse:rwm
     volumes:
-      - /apartmentlab/gitops/env/prod/rclone:/config/rclone:ro
+      - /apartmentlab/gitops/env/prod/rclone:/config/rclone
       - /apartmentlab/data/prod/cinesync/rclone-mount:/mnt/rclone
       - /apartmentlab/data/prod/cinesync/rclone-cache:/mnt/rclone-cache
       - /apartmentlab/data/prod/cinesync/library:/mnt/destination/library
