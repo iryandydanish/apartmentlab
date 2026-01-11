@@ -1,0 +1,21 @@
+services:
+  cinesync:
+    image: sureshfizzy/cinesync:${CINESYNC_TAG}
+    restart: unless-stopped
+    ports:
+      - 5173:5173
+      - 8082:8082
+    env_file:
+      - /apartmentlab/gitops/env/prod/cinesync.env
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    devices:
+      - /dev/fuse:/dev/fuse:rwm
+    volumes:
+      - /apartmentlab/gitops/env/prod/rclone:/config/rclone:ro
+      - /apartmentlab/data/prod/cinesync/rclone-mount:/mnt/rclone
+      - /apartmentlab/data/prod/cinesync/rclone-cache:/mnt/rclone-cache
+      - /apartmentlab/data/prod/cinesync/library:/mnt/destination/library
+      - /apartmentlab/data/prod/cinesync/db:/app/db
