@@ -17,9 +17,10 @@ services:
       - /dev/fuse:/dev/fuse:rwm
     volumes:
       - /apartmentlab/gitops/env/${ENV}/rclone:/config/rclone:ro
+      - /apartmentlab/data/${ENV}/cinesync/rclone-mount:/mnt/rclone
+      - /apartmentlab/data/${ENV}/cinesync/rclone-cache:/mnt/rclone-cache
       - /apartmentlab/data/${ENV}/cinesync/library:/mnt/destination/library
       - /apartmentlab/data/${ENV}/cinesync/db:/app/db
-      - /apartmentlab/data/${ENV}/cinesync/rclone-cache:/root/.cache/rclone
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:5173/health >/dev/null && wget -qO- http://localhost:8082/health >/dev/null || exit 1"]
       interval: 30s
