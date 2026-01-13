@@ -1,7 +1,6 @@
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:${JELLYFIN_TAG}
-    container_name: jellyfin
     restart: unless-stopped
     networks:
       - edge
@@ -13,7 +12,8 @@ services:
       - /apartmentlab/data/${ENV}/jellyfin/config:/config
       - /apartmentlab/data/${ENV}/jellyfin/cache:/cache
 
-      #Intentional and leave as `prod`. Transformed data only exists in prod
+      #Intentional and leave as `prod`. Transformed data + links only exists in prod
+      - /apartmentlab/data/prod/cinesync/rclone-mount:/mnt/rclone:ro
       - /apartmentlab/data/prod/cinesync/library:/library:ro
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8096/api/v1/status >/dev/null || exit 1"]
