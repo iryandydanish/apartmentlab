@@ -1,0 +1,45 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:${JELLYFIN_TAG}
+    container_name: jellyfin
+    restart: unless-stopped
+    networks:
+      - edge
+    exposed:
+      - "8096"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Singapore
+      # optional but nice if you access it remotely
+      - JELLYFIN_PublishedServerUrl=http://192.168.0.5
+    env_file:
+      - /apartmentlab/gitops/env/${ENV}/jellyfin.env
+    volumes:
+      - /apartmentlab/data/${ENV}/jellyfin/config:/config
+      - /apartmentlab/data/${ENV}/jellyfin/cache:/cache
+
+      #Intentional and leave as `prod`. Transformed data only exists in prod
+      - /apartmentlab/data/prod/cinesync/library:/library:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8096/api/v1/status >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  jellyfin_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "8096:8096"
+    command: tcp-listen:8096,fork,reuseaddr tcp-connect:jellyfin:8096
+    depends_on:
+      - jellyfin
+
+networks:
+  edge:
+    external: true
