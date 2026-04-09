@@ -131,21 +131,21 @@ Instead, prod relies on the infrastructure layer, specifically **Cloudflared**, 
 ## Repository structure
 
 ```text
-apartmentlab/
-├── .github/
-│   └── workflows/
+apartmentlab
+├── .github
+│   └── workflows
 │       └── deploy-prod.yml
-├── application/
-│   ├── aiostreams/
+├── application
+│   ├── aiostreams
 │   │   └── compose.yml
-│   ├── bentopdf/
+│   ├── bentopdf
 │   │   └── compose.yml
-│   └── send2ereader/
+│   └── send2ereader
 │       └── compose.yml
-├── infrastructure/
-│   ├── cloudflared/
+├── infrastructure
+│   ├── cloudflared
 │   │   └── compose.yml
-│   └── portainer/
+│   └── portainer
 │       └── compose.yml
 ├── apps-up.sh
 ├── apps-down.sh
@@ -324,6 +324,7 @@ git reset --hard origin/main
 ./infra-down.sh
 ./infra-up.sh
 ./apps-restart.sh
+```
 
 ## CI/CD proof
 
