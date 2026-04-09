@@ -1,129 +1,121 @@
-name: Deploy to Prod for ApartmentLab
+name: Deploy to Prod
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
 concurrency:
   group: prod-deploy
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
 jobs:
-  deploy:
+  deploy-prod:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Comment deploy started on PR
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          GH_REPO: ${{ github.repository }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Find related pull request
+        id: find_pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const commitSha = context.sha;
+
+            const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner,
+              repo,
+              commit_sha: commitSha,
+            });
+
+            if (prs.data.length > 0) {
+              const pr = prs.data[0];
+              core.setOutput("number", pr.number.toString());
+              core.setOutput("found", "true");
+            } else {
+              core.setOutput("found", "false");
+            }
+
+      - name: Comment deployment started
+        if: steps.find_pr.outputs.found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number("${{ steps.find_pr.outputs.number }}"),
+              body: `Started deployment to prod for commit \`${context.sha}\`.`
+            });
+
+      - name: Mask sensitive values
         run: |
-          set +e
-
-          SHA="${{ github.sha }}"
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-          PR_NUMBER="$(gh api \
-            -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/commits/$SHA/pulls \
-            -q '.[0].number' 2>/dev/null)"
-
-          if [ -n "$PR_NUMBER" ]; then
-            gh pr comment "$PR_NUMBER" --body $'⌛ Started deployment to prod for commit `'"$SHA"$'`\nSee log here: [Actions run]('"$RUN_URL"$')' || true
-            echo "Commented on PR #$PR_NUMBER"
-          else
-            echo "No PR found for SHA=$SHA (maybe direct push)."
-          fi
-
-          exit 0
+          echo "::add-mask::${{ secrets.TS_OAUTH_CLIENT_ID }}"
+          echo "::add-mask::${{ secrets.TS_AUDIENCE }}"
+          echo "::add-mask::${{ secrets.PROD_HOST }}"
+          echo "::add-mask::${{ secrets.PROD_SSH_KEY }}"
 
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
-          authkey: ${{ secrets.TS_AUTHKEY }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
           tags: tag:ci
-          ping: ${{ secrets.PROD_IP }}
+          ping: ${{ secrets.PROD_HOST }}
 
-      - name: Setup SSH key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          PROD_IP: ${{ secrets.PROD_IP }}
+      - name: Set up SSH key
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          cat > ~/.ssh/config <<EOF
-          Host prod
-            HostName ${PROD_IP}
-            User deploy
-            IdentityFile ~/.ssh/id_ed25519
-            IdentitiesOnly yes
-            StrictHostKeyChecking accept-new
-            BatchMode yes
-            ConnectTimeout 10
-          EOF
+          ssh-keyscan -H "${{ secrets.PROD_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy
+      - name: Deploy on production host
+        shell: bash
         run: |
-          ssh prod '
-            set -e
+          set -euo pipefail
+          ssh -o LogLevel=ERROR deploy@"${{ secrets.PROD_HOST }}" << 'EOF'
+            set -euo pipefail
+
             cd /apartmentlab/prod-repo/apartmentlab
-            git fetch origin
-            git checkout main
+            git fetch origin main
             git reset --hard origin/main
+
             ./apps-restart.sh
             ./infra-down.sh
             ./infra-up.sh
-          '
+          EOF
 
-      - name: Comment deploy success on PR
-        if: success()
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          set +e
+      - name: Comment deployment success
+        if: success() && steps.find_pr.outputs.found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number("${{ steps.find_pr.outputs.number }}"),
+              body: `✅ Deployed to prod for commit \`${context.sha}\`.`
+            });
 
-          SHA="${{ github.sha }}"
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-          PR_NUMBER="$(gh api \
-            -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/commits/$SHA/pulls \
-            -q '.[0].number' 2>/dev/null)"
-
-          if [ -n "$PR_NUMBER" ]; then
-            gh pr comment "$PR_NUMBER" --body $'✅ Deployed to prod for commit `'"$SHA"$'`\nSee log here: [Actions run]('"$RUN_URL"$')' || true
-            echo "Commented on PR #$PR_NUMBER"
-          else
-            echo "No PR found for SHA=$SHA (maybe direct push)."
-          fi
-
-          exit 0
-
-      - name: Comment deploy failure on PR
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          set +e
-
-          SHA="${{ github.sha }}"
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-          PR_NUMBER="$(gh api \
-            -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/commits/$SHA/pulls \
-            -q '.[0].number' 2>/dev/null)"
-
-          if [ -n "$PR_NUMBER" ]; then
-            gh pr comment "$PR_NUMBER" --body $'❌ Deployment FAILED for commit `'"$SHA"$'`\nSee log here: [Actions run]('"$RUN_URL"$')' || true
-            echo "Commented on PR #$PR_NUMBER"
-          else
-            echo "No PR found for SHA=$SHA (maybe direct push)."
-          fi
-
-          exit 0
+      - name: Comment deployment failure
+        if: failure() && steps.find_pr.outputs.found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number("${{ steps.find_pr.outputs.number }}"),
+              body: `❌ Deployment FAILED for commit \`${context.sha}\`. Check the workflow logs for details.`
+            })
