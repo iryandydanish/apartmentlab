@@ -1,6 +1,6 @@
 services:
   send2ereader:
-    image: dcnx/send2ereader@${SEND2EREADER_TAG}
+    image: taylantatli/send2ereader@${SEND2EREADER_TAG}
     restart: unless-stopped
     networks:
       - edge
