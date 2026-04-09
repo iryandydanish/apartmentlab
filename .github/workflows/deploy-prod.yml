@@ -36,9 +36,13 @@ jobs:
               commit_sha: commitSha,
             });
 
-            if (prs.data.length > 0) {
-              const pr = prs.data[0];
-              core.setOutput("number", pr.number.toString());
+            const mergedPr = prs.data.find(pr => pr.merged_at);
+
+            if (mergedPr) {
+              core.setOutput("number", mergedPr.number.toString());
+              core.setOutput("found", "true");
+            } else if (prs.data.length > 0) {
+              core.setOutput("number", prs.data[0].number.toString());
               core.setOutput("found", "true");
             } else {
               core.setOutput("found", "false");
@@ -57,10 +61,11 @@ jobs:
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
               body: `Started deployment to prod for commit \`${context.sha}\`.
 
-[View deployment run](${runUrl})`
+            [View deployment run](${runUrl})`
             });
 
       - name: Mask sensitive values
+        shell: bash
         run: |
           echo "::add-mask::${{ secrets.TS_OAUTH_CLIENT_ID }}"
           echo "::add-mask::${{ secrets.TS_AUDIENCE }}"
@@ -91,16 +96,16 @@ jobs:
           set -euo pipefail
           set -o pipefail
 
-          ssh -o LogLevel=ERROR deploy@"${{ secrets.PROD_HOST }}" << 'EOF' 2>&1 | tee deploy.log
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o LogLevel=ERROR deploy@"${{ secrets.PROD_HOST }}" << 'EOF' 2>&1 | tee deploy.log
             set -euo pipefail
 
             cd /apartmentlab/prod-repo/apartmentlab
             git fetch origin main
             git reset --hard origin/main
 
-            ./apps-restart.sh
             ./infra-down.sh
             ./infra-up.sh
+            ./apps-restart.sh
           EOF
 
       - name: Save failure log snippet
@@ -110,7 +115,7 @@ jobs:
         run: |
           {
             echo 'log_snippet<<EOF'
-            tail -n 80 deploy.log
+            tail -n 80 deploy.log || true
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -127,7 +132,7 @@ jobs:
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
               body: `✅ Deployed to prod for commit \`${context.sha}\`.
 
-[View deployment run](${runUrl})`
+            [View deployment run](${runUrl})`
             });
 
       - name: Comment deployment failure
@@ -146,11 +151,11 @@ jobs:
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
               body: `❌ Deployment FAILED for commit \`${context.sha}\`.
 
-[View deployment run](${runUrl})
+            [View deployment run](${runUrl})
 
-**Last log lines:**
-\`\`\`
-${logSnippet}
-\`\`\`
-`
+            **Last log lines:**
+            \`\`\`
+            ${logSnippet}
+            \`\`\`
+            `
             });
