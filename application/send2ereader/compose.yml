@@ -5,9 +5,9 @@ services:
     networks:
       - edge
     expose:
-      - "5174"
+      - "3001"
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:5174/api/v1/status >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/v1/status >/dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -20,8 +20,8 @@ services:
     networks:
       - edge
     ports:
-      - "3003:5174"
-    command: tcp-listen:5174,fork,reuseaddr tcp-connect:send2ereader:5174
+      - "3003:3001"
+    command: tcp-listen:3001,fork,reuseaddr tcp-connect:send2ereader:3001
     depends_on:
       - send2ereader
 
