@@ -61,9 +61,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
-              body: `Started deployment to prod for commit \`${context.sha}\`.
-
-[View deployment run](${runUrl})`
+              body: `Started deployment to prod for commit \`${context.sha}\`.\n\n[View deployment run](${runUrl})`
             });
 
       - name: Mask sensitive values
@@ -133,9 +131,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
-              body: `✅ Deployed to prod for commit \`${context.sha}\`.
-
-[View deployment run](${runUrl})`
+              body: `✅ Deployed to prod for commit \`${context.sha}\`.\n\n[View deployment run](${runUrl})`
             });
 
       - name: Comment deployment failure
@@ -153,13 +149,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
-              body: `❌ Deployment FAILED for commit \`${context.sha}\`.
-
-[View deployment run](${runUrl})
-
-**Last log lines:**
-\`\`\`
-${logSnippet}
-\`\`\`
-`
+              body: `❌ Deployment FAILED for commit \`${context.sha}\`.\n\n[View deployment run](${runUrl})\n\n**Last log lines:**\n\`\`\`\n${logSnippet}\n\`\`\``
             });
