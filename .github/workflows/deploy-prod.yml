@@ -12,6 +12,7 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
   id-token: write
 
 jobs:
@@ -50,7 +51,7 @@ jobs:
             }
 
       - name: Comment deployment started
-        if: steps.find_pr.outputs.found == 'true'
+        if: steps.find_pr.outputs.number != ''
         uses: actions/github-script@v7
         with:
           github-token: ${{ github.token }}
@@ -120,7 +121,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Comment deployment success
-        if: success() && steps.find_pr.outputs.found == 'true'
+        if: success() && steps.find_pr.outputs.number != ''
         uses: actions/github-script@v7
         with:
           github-token: ${{ github.token }}
@@ -135,7 +136,7 @@ jobs:
             });
 
       - name: Comment deployment failure
-        if: failure() && steps.find_pr.outputs.found == 'true'
+        if: failure() && steps.find_pr.outputs.number != ''
         uses: actions/github-script@v7
         env:
           LOG_SNIPPET: ${{ steps.failure_log.outputs.log_snippet }}
