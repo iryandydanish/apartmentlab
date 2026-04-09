@@ -358,7 +358,7 @@ This confirms the pipeline is repeatable and not limited to a one-off success ca
 
 ## Current status
 
-This repo is an active homelab and portfolio project. The setup is intentionally modular so more services can be added under `application/` or `infrastructure/` without changing the overall operating model.
+This repo is an active homelab and portfolio project. The setup is intentionally modular so more services can be added under `application` or `infrastructure` without changing the overall operating model.
 
 ## Notes
 
