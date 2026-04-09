@@ -15,5 +15,4 @@ docker compose \
   --env-file versions.env \
   -f infrastructure/cloudflared/compose.yml \
   -f infrastructure/portainer/compose.yml \
-  -f infrastructure/cinesync/compose.yml \
   up -d
