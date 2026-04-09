@@ -285,6 +285,36 @@ ApartmentLab is designed around a few principles:
 ./infra-down.sh
 ```
 
+## CI/CD proof
+
+The deployment pipeline is designed to report back directly into pull requests after a production deployment attempt. This gives visible proof that the workflow is actually running, whether the deployment succeeds or fails.
+
+### Failed deployment example
+
+* **PR #55** — `[preprod -> prod] Adjusted port & updated AIOstreams`
+* Merged into `main`
+* Deployment started automatically after merge
+* PR comment reported: **`❌ Deployment FAILED`**
+
+This shows the CI/CD pipeline does not just run silently. It detects and reports production deployment failures directly in the pull request.
+
+### Successful deployment example
+
+* **PR #56** — `Revert "[preprod -> prod] Adjusted port & updated AIOstreams"`
+* Merged into `main`
+* Deployment started automatically after merge
+* PR comment reported: **`✅ Deployed to prod`**
+
+This shows the same CI/CD pipeline can successfully deploy a rollback after a failed release.
+
+### Additional successful deployment example
+
+* **PR #57** — `[preprod -> prod] Updated AIOstreams and BentoPDF`
+* Deployment started automatically after merge
+* PR comment reported: **`✅ Deployed to prod`**
+
+This confirms the pipeline is repeatable and not limited to a one-off success case.
+
 ## Current status
 
 This repo is an active homelab and portfolio project. The setup is intentionally modular so more services can be added under `application/` or `infrastructure/` without changing the overall operating model.
