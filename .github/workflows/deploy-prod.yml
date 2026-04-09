@@ -49,11 +49,15 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
-              body: `Started deployment to prod for commit \`${context.sha}\`.`
+              body: `Started deployment to prod for commit \`${context.sha}\`.
+
+[View deployment run](${runUrl})`
             });
 
       - name: Mask sensitive values
@@ -81,10 +85,13 @@ jobs:
           ssh-keyscan -H "${{ secrets.PROD_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Deploy on production host
+        id: deploy_step
         shell: bash
         run: |
           set -euo pipefail
-          ssh -o LogLevel=ERROR deploy@"${{ secrets.PROD_HOST }}" << 'EOF'
+          set -o pipefail
+
+          ssh -o LogLevel=ERROR deploy@"${{ secrets.PROD_HOST }}" << 'EOF' 2>&1 | tee deploy.log
             set -euo pipefail
 
             cd /apartmentlab/prod-repo/apartmentlab
@@ -96,26 +103,54 @@ jobs:
             ./infra-up.sh
           EOF
 
+      - name: Save failure log snippet
+        if: failure()
+        id: failure_log
+        shell: bash
+        run: |
+          {
+            echo 'log_snippet<<EOF'
+            tail -n 80 deploy.log
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Comment deployment success
         if: success() && steps.find_pr.outputs.found == 'true'
         uses: actions/github-script@v7
         with:
           script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
-              body: `✅ Deployed to prod for commit \`${context.sha}\`.`
+              body: `✅ Deployed to prod for commit \`${context.sha}\`.
+
+[View deployment run](${runUrl})`
             });
 
       - name: Comment deployment failure
         if: failure() && steps.find_pr.outputs.found == 'true'
         uses: actions/github-script@v7
+        env:
+          LOG_SNIPPET: ${{ steps.failure_log.outputs.log_snippet }}
         with:
           script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const logSnippet = process.env.LOG_SNIPPET || "No log output captured.";
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number("${{ steps.find_pr.outputs.number }}"),
-              body: `❌ Deployment FAILED for commit \`${context.sha}\`. Check the workflow logs for details.`
-            })
+              body: `❌ Deployment FAILED for commit \`${context.sha}\`.
+
+[View deployment run](${runUrl})
+
+**Last log lines:**
+\`\`\`
+${logSnippet}
+\`\`\`
+`
+            });
