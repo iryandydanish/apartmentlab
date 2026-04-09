@@ -1,0 +1,30 @@
+services:
+  send2ereader:
+    image: dcnx/send2ereader:${send2ereader_TAG}
+    restart: unless-stopped
+    networks:
+      - edge
+    expose:
+      - "5174"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5174/api/v1/status >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  send2ereader_pub:
+    image: alpine/socat
+    restart: unless-stopped
+    profiles: ["preprod"]
+    networks:
+      - edge
+    ports:
+      - "3003:5174"
+    command: tcp-listen:5174,fork,reuseaddr tcp-connect:send2ereader:5174
+    depends_on:
+      - send2ereader
+
+networks:
+  edge:
+    external: true
