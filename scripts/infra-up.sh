@@ -2,9 +2,12 @@
 set -e
 
 PROJECT_NAME="apartmentlab-prod-infra"
-BASE_DIR="/apartmentlab/prod-repo/apartmentlab"
+BASE_DIR="/apartmentlab/prod-repo/apartmentlab/scripts"
 
 cd "$BASE_DIR"
+
+# Shared network (idempotent)
+docker network inspect edge >/dev/null 2>&1 || docker network create edge
 
 # Cloudflared, Portainer & cinesync
 docker compose \
@@ -12,4 +15,4 @@ docker compose \
   --env-file versions.env \
   -f infrastructure/cloudflared/compose.yml \
   -f infrastructure/portainer/compose.yml \
-  down --remove-orphans
+  up -d
