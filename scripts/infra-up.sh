@@ -2,7 +2,7 @@
 set -e
 
 PROJECT_NAME="apartmentlab-prod-infra"
-BASE_DIR="/apartmentlab/prod-repo/apartmentlab/scripts"
+BASE_DIR="/apartmentlab/prod-repo/apartmentlab"
 
 cd "$BASE_DIR"
 
