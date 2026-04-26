@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 echo "Shutting down applications"
-./apps-down.sh
+./scripts/apps-down.sh
 echo "Starting applications"
-./apps-up.sh
+./scripts/apps-up.sh
 echo "Applications restarted successfully."
