@@ -104,7 +104,7 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o LogLevel=ERROR deploy@"${{ secrets.PROD_HOST }}" << 'EOF' 2>&1 | tee deploy.log
             set -euo pipefail
 
-            cd /apartmentlab/prod-repo/apartmentlab
+            cd /apartmentlab/prod-repo/apartmentlab/scripts
             git fetch origin main
             git reset --hard origin/main
 
