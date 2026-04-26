@@ -104,13 +104,13 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o LogLevel=ERROR deploy@"${{ secrets.PROD_HOST }}" << 'EOF' 2>&1 | tee deploy.log
             set -euo pipefail
 
-            cd /apartmentlab/prod-repo/apartmentlab/scripts
+            cd /apartmentlab/prod-repo/apartmentlab
             git fetch origin main
             git reset --hard origin/main
 
-            ./infra-down.sh
-            ./infra-up.sh
-            ./apps-restart.sh
+            ./scripts/infra-down.sh
+            ./scripts/infra-up.sh
+            ./scripts/apps-restart.sh
           EOF
 
       - name: Save failure log snippet
