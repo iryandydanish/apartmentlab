@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [ "$BASE_DIR" = "/apartmentlab/prod-repo/apartmentlab/scripts" ]; then
+if [ "$BASE_DIR" = "/apartmentlab/prod-repo/apartmentlab" ]; then
 
   ENV=prod
   PROJECT_NAME="apartmentlab-prod"
@@ -19,7 +19,7 @@ if [ "$BASE_DIR" = "/apartmentlab/prod-repo/apartmentlab/scripts" ]; then
 
   echo "Applications stopped in prod environment."
 
-elif [ "$BASE_DIR" = "/apartmentlab/preprod-repo/apartmentlab/scripts" ]; then
+elif [ "$BASE_DIR" = "/apartmentlab/preprod-repo/apartmentlab" ]; then
 
   ENV=preprod
   PROJECT_NAME="apartmentlab-preprod"
@@ -37,6 +37,6 @@ elif [ "$BASE_DIR" = "/apartmentlab/preprod-repo/apartmentlab/scripts" ]; then
   echo "Applications stopped in preprod environment."
 
 else
-  echo "Error: Unknown BASE_DIR. Please check the configuration."
+  echo "Error: Unknown BASE_DIR: $BASE_DIR"
   exit 1
 fi
