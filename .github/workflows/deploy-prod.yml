@@ -19,6 +19,10 @@ jobs:
   deploy-prod:
     runs-on: ubuntu-latest
 
+    environment:
+      name: Production
+      url: https://aiostreams.apartmentlab.org
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
